@@ -59,7 +59,7 @@ export default function Add({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.title}>
-      <h3> Welcome to the Imagine PoC</h3>
+        <h3> Welcome to the Imagine PoC</h3>
       </View>
       <View style={styles.cameraContainer}>
         <Camera
@@ -70,27 +70,46 @@ export default function Add({ navigation }) {
         />
       </View>
 
-      <Button title={'Take Picture'} onPress={takePicture} />
-      <Button title={'Gallery'} onPress={pickImage} />
+      <View style={styles.meow}>
+        <Button style={styles.mew} title={'Take Picture'} onPress={takePicture} />
+        <Button style={styles.mew} title={'Gallery'} onPress={pickImage} />
+      </View>
+
       {imageUri && <Image source={{ uri: imageUri }} style={styles.cameraContainer} />}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  meow: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  mew: {
+    flex: 1,
+    width: '40%',
+    margin: '1rem',
+  },
+
   container: {
     flex: 1,
+    padding: '1rem',
   },
   cameraContainer: {
-    flex: 0.2,
+    flex: 0.3,
     flexDirection: 'row',
+    width: 'auto',
     borderWidth: 4,
     borderColor: "#61DBFB",
     borderRadius: 6,
+    
   },
   fixedRatio: {
     flex: 1,
     aspectRatio: 1,
+    objectFit: "contain",
+
   },
   button: {
     flex: 0.1,
@@ -103,15 +122,13 @@ const styles = StyleSheet.create({
 
   },
   title: {
-    marginTop: 0,
-    paddingVertical: 5,
     borderWidth: 4,
     borderColor: "#61DBFB",
     borderRadius: 6,
     backgroundColor: "#fffde7",
     color: "#61DBFB",
     textAlign: "center",
-    fontSize: 30,
+    fontSize: 17,
     fontWeight: "bold"
   },
 });
