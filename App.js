@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Button, Image } from 'react-native';
+import {
+  SafeAreaView,
+
+  TouchableOpacity,
+  Animated,
+} from 'react-native'
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -10,6 +16,43 @@ export default function Add({ navigation }) {
   const [camera, setCamera] = useState(null);
   const [imageUri, setImageUri] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
+
+
+  let animatedValue = new Animated.Value(0);
+  let currentValue = 0;
+
+  animatedValue.addListener(({ value }) => {
+    currentValue = value;
+  });
+
+  const flipAnimation = () => {
+    if (currentValue >= 90) {
+      Animated.spring(animatedValue, {
+        toValue: 0,
+        tension: 10,
+        friction: 8,
+        useNativeDriver: false,
+      }).start();
+    } else {
+      Animated.spring(animatedValue, {
+        toValue: 180,
+        tension: 10,
+        friction: 8,
+        useNativeDriver: false,
+      }).start();
+    }
+  };
+
+  const setInterpolate = animatedValue.interpolate({
+    inputRange: [0, 180],
+    outputRange: ['180deg', '360deg'],
+  });
+
+  const rotateYAnimatedStyle = {
+    transform: [{ rotateY: setInterpolate }],
+  };
+
+
 
   const permisionFunction = async () => {
     // here is how you can get the camera permission
@@ -59,7 +102,7 @@ export default function Add({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.title}>
-        <h3> Welcome to the Imagine PoC</h3>
+        <h3> Welcome to the Amber Expo PoC</h3>
       </View>
       <View style={styles.cameraContainer}>
         <Camera
@@ -75,7 +118,13 @@ export default function Add({ navigation }) {
         <Button style={styles.mew} title={'Gallery'} onPress={pickImage} />
       </View>
 
-      {imageUri && <Image source={{ uri: imageUri }} style={styles.cameraContainer} />}
+      {imageUri && <Animated.Image source={{ uri: imageUri }} 
+      
+      style={[rotateYAnimatedStyle, styles.cameraContainer]}/>
+      
+      }
+
+      {imageUri &&<Button style={styles.mew} onPress={flipAnimation} title={'Flip'}/>}
     </View>
   );
 }
