@@ -5,6 +5,9 @@ import { StyleSheet, Animated, View, Button, Image } from 'react-native';
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 
+import { manipulateAsync, FlipType } from 'expo-image-manipulator';
+
+
 export default function Add({ navigation }) {
   const [cameraPermission, setCameraPermission] = useState(null);
   const [galleryPermission, setGalleryPermission] = useState(null);
@@ -14,6 +17,43 @@ export default function Add({ navigation }) {
   const [type, setType] = useState(Camera.Constants.Type.back);
 
 
+  // expo-image-manipulator methods
+  const rotate90 = async () => {
+    const manipResult = await manipulateAsync(
+      imageUri,
+      [{ rotate: 90 },],
+    );
+    setImageUri(manipResult.uri);
+  };
+
+  const flip = async () => {
+    const manipResult = await manipulateAsync(
+      imageUri,
+      [{ rotate: 180 },
+        { flip: FlipType.Vertical },],
+    );
+    setImageUri(manipResult.uri);
+  };
+
+  const resize = async () => {
+    const manipResult = await manipulateAsync(
+      imageUri,
+      [{ resize: { height: 50, width: 200 } },],
+    );
+    setImageUri(manipResult.uri);
+  };
+
+  const crop = async () => {
+    const manipResult = await manipulateAsync(
+      imageUri,
+      [{ crop: { originX: 0, height: 400, originY: 0, width: 600 } },],
+    );
+    setImageUri(manipResult.uri);
+  };
+
+
+
+  /*
   let animatedValue = new Animated.Value(0);
   let currentValue = 0;
 
@@ -47,7 +87,7 @@ export default function Add({ navigation }) {
   const rotateYAnimatedStyle = {
     transform: [{ rotateY: setInterpolate }],
   };
-
+  */
 
 
   const permisionFunction = async () => {
@@ -114,13 +154,32 @@ export default function Add({ navigation }) {
         <Button style={styles.mew} title={'Gallery'} onPress={pickImage} />
       </View>
 
-      {imageUri && <Animated.Image source={{ uri: imageUri }} 
       
+      {
+      
+      /*imageUri && <Animated.Image source={{ uri: imageUri }} 
       style={[rotateYAnimatedStyle, styles.cameraContainer]}/>
+      */
+      imageUri && <Image source={{ uri: imageUri }} 
       
+      style={styles.cameraContainer}/>
       }
+      
+      
 
-      {imageUri &&<Button style={styles.mew} onPress={flipAnimation} title={'Flip'}/>}
+      {imageUri &&
+      
+      <View style={styles.meow}>
+        <Button style={styles.mew} onPress={rotate90} title={'Rotate'}/>
+        <Button style={styles.mew} onPress={flip} title={'Flip'}/>
+        <Button style={styles.mew} onPress={resize} title={'Resize'}/>
+        <Button style={styles.mew} onPress={crop} title={'Crop'}/>
+
+      </View>
+      }
+      
+ 
+
     </View>
   );
 }
