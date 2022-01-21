@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Animated, View, Button, Image } from 'react-native';
+import { StyleSheet, Animated, TouchableOpacity, View, Button, Image } from 'react-native';
 
 
 import { Camera } from 'expo-camera';
@@ -92,9 +92,11 @@ export default function Add({ navigation }) {
 
   const permisionFunction = async () => {
     // here is how you can get the camera permission
-    const cameraPermission = await Camera.requestPermissionsAsync();
+    //const cameraPermission = await Camera.requestCameraPermissionsAsync();
 
-    setCameraPermission(cameraPermission.status === 'granted');
+    //setCameraPermission(cameraPermission.status === 'granted');
+
+    setCameraPermission(true);
 
     const imagePermission = await ImagePicker.getMediaLibraryPermissionsAsync();
     console.log(imagePermission.status);
@@ -145,13 +147,14 @@ export default function Add({ navigation }) {
           ref={(ref) => setCamera(ref)}
           style={styles.fixedRatio}
           type={type}
-          ratio={'1:1'}
+          ratio='1:1'
         />
       </View>
 
       <View style={styles.meow}>
         <Button style={styles.mew} title={'Take Picture'} onPress={takePicture} />
         <Button style={styles.mew} title={'Gallery'} onPress={pickImage} />
+
       </View>
 
       
@@ -201,12 +204,14 @@ const styles = StyleSheet.create({
     padding: '1rem',
   },
   cameraContainer: {
-    flex: 0.3,
+    //flex: 0.3,
+    aspectRatio: 1,
     flexDirection: 'row',
     width: 'auto',
     borderWidth: 4,
     borderColor: "#61DBFB",
     borderRadius: 6,
+
     
   },
   fixedRatio: {
