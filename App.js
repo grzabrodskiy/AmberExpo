@@ -96,18 +96,18 @@ export default function Add({ navigation }) {
   const crop = async () => {
 
   
-    //console.log({ originX: end?.x, height: dimensions?.h, originY: end?.y, width: dimensions?.w });
+    console.log({ originX: end?.x, height: dimensions?.h, originY: end?.y, width: dimensions?.w });
 
     if (!dimensions || dimensions.h <= 0 || dimensions.w <= 0)
       return;
 
     console.log("crop");
-    console.log({ originX: end?.x, height: dimensions?.h, originY: end?.y, width: dimensions?.w });
+    console.log({ originX: end?.y, height: dimensions?.w, originY: end?.x, width: dimensions?.h });
 
 
     const manipResult = await manipulateAsync(
       imageUri,
-      [{ crop: { originX: end?.x, height: dimensions?.h, originY: end?.y, width: dimensions?.w } },],
+      [{ crop: { originX: end?.y, height: dimensions?.w, originY: end?.x, width: dimensions?.h } },],
     ).catch((error)=>{});
 
     if (manipResult){
@@ -240,7 +240,7 @@ export default function Add({ navigation }) {
             <ImageBackground source={{ uri: imageUri }} style={styles.cameraContainer} imageRef={imgRef}>
               <View
               style={{
-                //position: 'absolute',
+                position: 'absolute',
                 borderWidth: 5,
                 borderColor: 'orange',
                 backgroundColor: 'blue',
