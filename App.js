@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,  } from 'react';
 import { StyleSheet, Animated, TouchableOpacity, View, Button, Image } from 'react-native';
 import { GestureEvent, PanGestureHandler, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
 
@@ -20,6 +20,7 @@ export default function Add({ navigation }) {
 
   const [editorVisible, setEditorVisible] = useState(false);
 
+  const imgRef = React.useRef(null);
 
   // rectangle draw
 
@@ -78,11 +79,18 @@ export default function Add({ navigation }) {
   };
 
   const resize = async () => {
-    const manipResult = await manipulateAsync(
-      imageUri,
-      [{ resize: { height: 50, width: 200 } },],
-    );
-    setImageUri(manipResult.uri);
+
+    Image.getSize(imageUri, async (w, h) => {
+      console.log("size", w, h)
+      const manipResult = await manipulateAsync(
+        imageUri,
+        [{ resize: { height: Math.round(h/0.9), width: Math.round(w/0.87) } },],
+      );
+      setImageUri(manipResult.uri);
+    
+    }, (error)=>{console.log(error)});
+
+    
   };
 
   const crop = async () => {
@@ -160,6 +168,8 @@ export default function Add({ navigation }) {
 
     setCameraPermission(true);
 
+    console.error("checking permissions");
+
     const imagePermission = await ImagePicker.getMediaLibraryPermissionsAsync();
     console.log(imagePermission.status);
 
@@ -219,10 +229,8 @@ export default function Add({ navigation }) {
       <View style={styles.meow}>
         <Button style={styles.mew} title={'Take Picture'} onPress={takePicture} />
         <Button style={styles.mew} title={'Gallery'} onPress={pickImage} />
-
+       
       </View>
-
-      
       {
       
       /*imageUri && <Animated.Image source={{ uri: imageUri }} 
@@ -230,10 +238,11 @@ export default function Add({ navigation }) {
       */
       imageUri && 
         <PanGestureHandler onGestureEvent={onPress} onEnded={onEnd} >
-            <ImageBackground source={{ uri: imageUri }} style={styles.cameraContainer}>
+            <ImageBackground source={{ uri: imageUri }} style={styles.cameraContainer} imageRef={imgRef}>
               <View
               style={{
                 //position: 'absolute',
+                
                 backgroundColor: 'blue',
                 opacity: 0.1,
                 top: start?.x ?? end?.x,
@@ -246,7 +255,6 @@ export default function Add({ navigation }) {
           </PanGestureHandler>
       }
       
-      
 
       {imageUri &&
       
@@ -255,8 +263,6 @@ export default function Add({ navigation }) {
         <Button style={styles.mew} onPress={flip} title={'Flip'}/>
         <Button style={styles.mew} onPress={resize} title={'Resize'}/>
         <Button style={styles.mew} onPress={crop} title={'Crop'} disabled={!canCrop()}/>
-        
-
       </View>
       }
       
