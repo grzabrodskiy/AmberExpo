@@ -168,7 +168,6 @@ export default function Add({ navigation }) {
 
     setCameraPermission(true);
 
-    console.error("checking permissions");
 
     const imagePermission = await ImagePicker.getMediaLibraryPermissionsAsync();
     console.log(imagePermission.status);
@@ -242,7 +241,8 @@ export default function Add({ navigation }) {
               <View
               style={{
                 //position: 'absolute',
-                
+                borderWidth: 5,
+                borderColor: 'orange',
                 backgroundColor: 'blue',
                 opacity: 0.1,
                 top: start?.x ?? end?.x,
