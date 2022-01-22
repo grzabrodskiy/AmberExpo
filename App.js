@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Animated, TouchableOpacity, View, Button, Image } from 'react-native';
-
+import { GestureEvent, PanGestureHandler, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
 
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 
 import { manipulateAsync, FlipType } from 'expo-image-manipulator';
+import { ImageBackground } from 'react-native-web';
+
 
 
 export default function Add({ navigation }) {
@@ -16,6 +18,46 @@ export default function Add({ navigation }) {
   const [imageUri, setImageUri] = useState(null);
   const [type, setType] = useState(Camera.Constants.Type.back);
 
+  const [editorVisible, setEditorVisible] = useState(false);
+
+
+  // rectangle draw
+
+  const [start, setStart] = useState(null);
+  const [end, setEnd] = useState({ x: 0, y: 0});
+  const [dimensions, setDimensions] = useState({ w: 0, h: 0 });
+
+  const onPress = (event) => {
+    const { x, y, translationX, translationY } = event.nativeEvent;
+    console.log(event.nativeEvent);
+
+    setEnd({ x: 0, y: 0});
+
+    if (!start) 
+      setStart({ x: y, y: x });
+
+      
+    setDimensions({ w: translationX, h: translationY });
+  };
+
+
+  const canCrop = () => {
+    return (end && end.x > 0) && (dimensions && dimensions.w > 0 && dimensions.h > 0);
+  }
+
+
+
+  const onEnd = () => {
+    if (!start) return;
+
+    setEnd(start);
+    setStart(null);
+  };
+
+
+  // end rectangle draw
+
+  
 
   // expo-image-manipulator methods
   const rotate90 = async () => {
@@ -44,14 +86,34 @@ export default function Add({ navigation }) {
   };
 
   const crop = async () => {
+
+  
+    //console.log({ originX: end?.x, height: dimensions?.h, originY: end?.y, width: dimensions?.w });
+
+    if (!dimensions || dimensions.h <= 0 || dimensions.w <= 0)
+      return;
+
+    console.log("crop");
+    console.log({ originX: end?.x, height: dimensions?.h, originY: end?.y, width: dimensions?.w });
+
+
     const manipResult = await manipulateAsync(
       imageUri,
-      [{ crop: { originX: 0, height: 400, originY: 0, width: 600 } },],
-    );
-    setImageUri(manipResult.uri);
+      [{ crop: { originX: end?.x, height: dimensions?.h, originY: end?.y, width: dimensions?.w } },],
+    ).catch((error)=>{});
+
+    if (manipResult){
+      setImageUri(manipResult.uri);
+    }
+    clearRectangle();
+
   };
 
-
+  const clearRectangle = () =>{
+    setStart(null);
+    setDimensions(null);
+    setEnd({x:0, y:0});
+  }
 
   /*
   let animatedValue = new Animated.Value(0);
@@ -120,8 +182,11 @@ export default function Add({ navigation }) {
       const data = await camera.takePictureAsync(null);
       console.log(data.uri);
       setImageUri(data.uri);
+      clearRectangle();
+
     }
   };
+
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -163,9 +228,22 @@ export default function Add({ navigation }) {
       /*imageUri && <Animated.Image source={{ uri: imageUri }} 
       style={[rotateYAnimatedStyle, styles.cameraContainer]}/>
       */
-      imageUri && <Image source={{ uri: imageUri }} 
-      
-      style={styles.cameraContainer}/>
+      imageUri && 
+        <PanGestureHandler onGestureEvent={onPress} onEnded={onEnd} >
+            <ImageBackground source={{ uri: imageUri }} style={styles.cameraContainer}>
+              <View
+              style={{
+                //position: 'absolute',
+                backgroundColor: 'blue',
+                opacity: 0.1,
+                top: start?.x ?? end?.x,
+                left: start?.y ?? end?.y,
+                width: dimensions?.w ?? 0,
+                height: dimensions?.h ?? 0,
+                }}
+              />
+            </ImageBackground>
+          </PanGestureHandler>
       }
       
       
@@ -176,7 +254,8 @@ export default function Add({ navigation }) {
         <Button style={styles.mew} onPress={rotate90} title={'Rotate'}/>
         <Button style={styles.mew} onPress={flip} title={'Flip'}/>
         <Button style={styles.mew} onPress={resize} title={'Resize'}/>
-        <Button style={styles.mew} onPress={crop} title={'Crop'}/>
+        <Button style={styles.mew} onPress={crop} title={'Crop'} disabled={!canCrop()}/>
+        
 
       </View>
       }
