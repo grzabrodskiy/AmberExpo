@@ -1,6 +1,6 @@
-import React, { useState, useEffect,  } from 'react';
-import { StyleSheet, Animated, TouchableOpacity, View, Button, Image } from 'react-native';
-import { GestureEvent, PanGestureHandler, PanGestureHandlerEventPayload } from 'react-native-gesture-handler';
+import React, { useState, useEffect  } from 'react';
+import { StyleSheet, View, Button, Image } from 'react-native';
+import { PanGestureHandler } from 'react-native-gesture-handler';
 
 import { Camera } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
@@ -30,7 +30,7 @@ export default function Add({ navigation }) {
 
   const onPress = (event) => {
     const { x, y, translationX, translationY } = event.nativeEvent;
-    console.log(event.nativeEvent);
+    //console.log(event.nativeEvent);
 
     setEnd({ x: 0, y: 0});
 
@@ -88,7 +88,7 @@ export default function Add({ navigation }) {
       );
       setImageUri(manipResult.uri);
     
-    }, (error)=>{console.log(error)});
+    }, (error)=>{"Error:", console.log(error)});
 
     
   };
@@ -189,7 +189,7 @@ export default function Add({ navigation }) {
   const takePicture = async () => {
     if (camera) {
       const data = await camera.takePictureAsync(null);
-      console.log(data.uri);
+      //console.log(data.uri);
       setImageUri(data.uri);
       clearRectangle();
 
@@ -205,7 +205,7 @@ export default function Add({ navigation }) {
       quality: 1,
     });
 
-    console.log(result);
+    //console.log(result);
     if (!result.cancelled) {
       setImageUri(result.uri);
     }
